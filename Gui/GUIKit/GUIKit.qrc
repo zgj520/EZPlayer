@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/GUIKit">
+        <file>qmldir</file>
+        <file>Button/GUIButton.qml</file>
+        <file>Button/GUIImageButton.qml</file>
+    </qresource>
+</RCC>

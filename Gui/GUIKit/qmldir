@@ -1,0 +1,5 @@
+module GUIKit
+
+# version 1.0
+GUIButton 1.0 Button/GUIButton.qml
+GUIImageButton 1.0 Button/GUIImageButton.qml

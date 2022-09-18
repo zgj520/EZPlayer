@@ -1,0 +1,56 @@
+#if defined(UNDER_CE)
+#include <winbase.h>
+#else
+#include <winver.h>
+#endif
+
+///////////////////////////////////////
+#define CUSTOM_PRODUCTNAME_STR	"EZPlayer"
+#define CUSTOM_COMAPNYNAME_STR	"LJP"
+#define CUSTOM_COPYRIGHT_INFO_STR	"Copyright (C) 2022 LJP"
+#define CUSTOM_FILEDESCRIPTION_STR	"Normal tools"
+#define CUSTOM_ORIGINFILENAME_STR	"GUIKit"
+#define CUSTOM_PRODUCTVERSION  12,1,0,0
+#define CUSTOM_PRODUCTVERSION_STR  "12.1.0.\0"
+#define CUSTOM_FILEVERSION  12,1,0,0
+#define CUSTOM_FILEVERSION_STR  "12.1.0.0"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION CUSTOM_FILEVERSION
+ PRODUCTVERSION CUSTOM_PRODUCTVERSION
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x7L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", CUSTOM_COMAPNYNAME_STR
+            VALUE "FileDescription", CUSTOM_FILEDESCRIPTION_STR
+            VALUE "FileVersion", CUSTOM_FILEVERSION_STR
+            VALUE "InternalName", CUSTOM_PRODUCTNAME_STR
+            VALUE "LegalCopyright", CUSTOM_COPYRIGHT_INFO_STR
+            VALUE "OriginalFilename", CUSTOM_ORIGINFILENAME_STR
+            VALUE "ProductName", CUSTOM_PRODUCTNAME_STR
+            VALUE "ProductVersion", CUSTOM_PRODUCTVERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04E4
+    END
+END
+

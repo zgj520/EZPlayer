@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Main/MainWindow/Views/MainWindow.qml</file>
+        <file>Main/MainWindow/Views/TitleBar.qml</file>
+        <file>Res/close.svg</file>
+        <file>Res/close_white.svg</file>
+    </qresource>
+</RCC>
