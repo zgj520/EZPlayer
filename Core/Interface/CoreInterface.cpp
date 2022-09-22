@@ -22,6 +22,6 @@ namespace EZCore {
     }
 
     void destoryFileInstance(long fileHandle) {
-
+        CoreManger::instance().destoryFileInstance(fileHandle);
     }
 }

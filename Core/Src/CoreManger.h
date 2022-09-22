@@ -10,6 +10,8 @@ public:
 
     long createFileInstance(const std::string& filePath, long wndId);
 
+    void destoryFileInstance(long fileHandle);
+
     void play(long fileHandle);
 
     void refreshCurrentFrame(long fileHandle);

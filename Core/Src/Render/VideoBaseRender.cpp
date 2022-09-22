@@ -21,6 +21,10 @@ void main()
 })";
 }
 
+VideoBaseRender::~VideoBaseRender() {
+    destroyGL();
+}
+
 bool VideoBaseRender::init() {
     // init display
     auto native_display = m_windid != 0 ? GetDC((HWND)m_windid) : EGL_DEFAULT_DISPLAY;

@@ -2,9 +2,11 @@
 #define PlayerWindow_H_
 #include <QWindow>
 #include <windows.h>
-#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
 
 class PlayerWindow : public QWindow {
+    Q_OBJECT
+
 public:
     PlayerWindow(QWindow* parent);
 
@@ -21,6 +23,7 @@ private:
     HWND m_wnd = nullptr;
     long m_renderInstance = 0;
     std::string m_filePath;
+    bool m_bOpenGLRender = false;
 };
 
 #endif

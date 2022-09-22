@@ -5,6 +5,10 @@
 
 void PlayCore::timeOClock() {
     m_glThread->addTask([this]() {
+        if (m_state == PlayState_Stop && m_lastFrame != nullptr) {
+            m_pRender->render(m_lastFrame);
+            return;
+        }
         if (m_state != PlayState_Playing) {
             return;
         }

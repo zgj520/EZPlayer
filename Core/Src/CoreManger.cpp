@@ -14,6 +14,15 @@ long CoreManger::createFileInstance(const std::string& filePath, long wndId) {
     return id;
 }
 
+void CoreManger::destoryFileInstance(long fileHandle) {
+    auto iter = m_mapFileInstance.find(fileHandle);
+    if (iter == m_mapFileInstance.end()) {
+        return;
+    }
+    delete iter->second;
+    m_mapFileInstance.erase(iter);
+}
+
 void CoreManger::play(long fileHandle) {
     auto iter = m_mapFileInstance.find(fileHandle);
     if (iter == m_mapFileInstance.end()) {

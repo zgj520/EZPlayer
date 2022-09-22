@@ -4,7 +4,7 @@
 #include <QQmlApplicationEngine>
 #include "Main/MainWindow/ViewModels/MainWindowViewModel.h"
 #include "../../GUIKit/GUIKitInterface.h"
-#include "Main\MainWindow\ViewModels\PlayerWindow.h"
+#include "Main\MainWindow\ViewModels\PlayerViewModel.h"
 #include "Utils\RegisterModel.h"
 
 int main(int argc, char* argv[]) {
@@ -20,7 +20,9 @@ int main(int argc, char* argv[]) {
     if (pQmlEngine != nullptr) {
         pQmlEngine->addImportPath(QStringLiteral("qrc:/"));
     }
-    REGISTER_VIEWMODEL(PlayerWindow, "Player");
+    REGISTER_VIEWMODEL(PlayerWindow, "PlayerWindow");
+    REGISTER_VIEWMODEL(PlayerViewModel, "PlayerViewModel");
+
     //全局初始化GUIKit
     GUIKit::initGUIKit(pQmlEngine);
 

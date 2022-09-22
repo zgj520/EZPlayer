@@ -72,7 +72,7 @@ void YUV420PToRGBARender::render(AVFrame* frame) {
     // Use the program object
     glUseProgram(m_programId);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //定义定点数组

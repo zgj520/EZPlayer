@@ -13,7 +13,7 @@ class VideoBaseRender
 {
 public:
     VideoBaseRender(long winid);
-    ~VideoBaseRender() {};
+    ~VideoBaseRender();
 
     virtual void render();
 
