@@ -3,6 +3,7 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.2
 import PlayerViewModel 1.0
 import PlayerWindow 1.0
+import GUIKit 1.0
 
 Rectangle {
 	id:root
@@ -24,6 +25,26 @@ Rectangle {
             top:parent.top
         }
         height: 40
+        GUIImageButton {
+            id: closeBtn
+            width: 24
+            height: 24
+            anchors{
+                right: parent.right
+                rightMargin: 8
+                verticalCenter: parent.verticalCenter
+            }
+            defaultColor: GUIColor.Clear
+            hoveredBkColor: GUIColor.Red1
+            pressedBkColor: GUIColor.Red1
+            defaultImgPath: "qrc:/Res/close.svg"
+            hoveredImgPath: "qrc:/Res/close_white.svg"
+            pressedImgPath: "qrc:/Res/close.svg"
+            disabledImgPath: "qrc:/Res/close.svg"
+            onClicked: {
+                //root.signalReqClose()
+            }
+        }
         MouseArea{
             anchors.fill: parent
             property point clickPos: "0,0"

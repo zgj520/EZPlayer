@@ -3,13 +3,14 @@
 OClock::OClock(int64_t interalMSTime, OCLOCK_CALLBACK callBack) {
     m_interalMSTime = interalMSTime;
     m_callback = callBack;
-
-    m_pClockThread = new TaskThread;
 }
 
 void OClock::start() {
     if (!m_bStop) {
         return;
+    }
+    if (m_pClockThread == nullptr) {
+        m_pClockThread = new TaskThread;
     }
     m_pClockThread->addTask([this]() {
         m_bStop = false;
@@ -23,11 +24,10 @@ void OClock::start() {
 }
 void OClock::stop() {
     m_bStop = true;
-    m_pClockThread->stop();
+    delete m_pClockThread;
+    m_pClockThread = nullptr;
 }
 
 OClock::~OClock() {
-    m_bStop = true;
-    m_pClockThread->stop();
-    delete m_pClockThread;
+    stop();
 }

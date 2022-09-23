@@ -44,7 +44,13 @@ void TaskThread::run() {
 
 void TaskThread::stop() {
     m_bStop = true;
-    m_pThread->join();
-    delete m_pThread;
+    m_ConditionVar.notify_all();
+    if (m_pThread) {
+        if (m_pThread->joinable()) {
+            m_pThread->join();
+        }
+        delete m_pThread;
+        m_pThread = nullptr;
+    }
     m_vtTask.clear();
 }

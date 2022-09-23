@@ -53,6 +53,12 @@ FFVideoDecoder::FFVideoDecoder(const std::string& filePath){
 }
 
 FFVideoDecoder::~FFVideoDecoder(){
+    m_bStop = true;
+    if (m_pThread) {
+        m_decodeConditionVar.notify_all();
+        m_pThread->join();
+        delete m_pThread;
+    }
     av_buffer_unref(&m_pCodecContext->hw_device_ctx);
     avcodec_free_context(&m_pCodecContext);
     avformat_close_input(&m_pFormatContext);

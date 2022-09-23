@@ -77,6 +77,9 @@ PlayCore::~PlayCore(){
     if (m_lastFrame != nullptr) {
         m_pDecoder->freeOneFrame(m_lastFrame);
     }
-    delete m_pRender;
+    delete m_pClock;
     delete m_pDecoder;
+    delete m_glThread;
+    delete m_pRender;
+
 }
