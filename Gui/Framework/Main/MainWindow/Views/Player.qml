@@ -7,8 +7,7 @@ import GUIKit 1.0
 
 Rectangle {
 	id:root
-    width: 400
-    height: 400
+    signal signalReqClose()
     property var parentWindow: null
     property PlayerViewModel viewModel: PlayerViewModel{}
     property var playRenderWindow: null
@@ -25,6 +24,23 @@ Rectangle {
             top:parent.top
         }
         height: 40
+        MouseArea{
+            anchors.fill: parent
+            property point clickPos: "0,0"
+            onPressed: {
+                clickPos = Qt.point(mouse.x, mouse.y)
+            }
+            onPositionChanged: {
+                var delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
+
+                root.x = (root.x + delta.x)
+                root.y = (root.y + delta.y)
+                console.log(delta, root.x, root.y)
+            }
+            onDoubleClicked: {
+
+            }
+        }
         GUIImageButton {
             id: closeBtn
             width: 24
@@ -42,24 +58,7 @@ Rectangle {
             pressedImgPath: "qrc:/Res/close.svg"
             disabledImgPath: "qrc:/Res/close.svg"
             onClicked: {
-                //root.signalReqClose()
-            }
-        }
-        MouseArea{
-            anchors.fill: parent
-            property point clickPos: "0,0"
-            onPressed: {
-                clickPos = Qt.point(mouse.x, mouse.y)
-            }
-            onPositionChanged: {
-                var delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
-
-                root.x = (root.x + delta.x)
-                root.y = (root.y + delta.y)
-                console.log(delta, root.x, root.y)
-            }
-            onDoubleClicked: {
-                root.isFullScreen = !root.isFullScreen
+                root.signalReqClose()
             }
         }
     }

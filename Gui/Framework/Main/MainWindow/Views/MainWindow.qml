@@ -62,13 +62,43 @@ Window {
                 rightMargin: 1
             }
         }
-        Player{
-            id: playerContainer1
-            parentWindow: root
-             width: 400
-             height: 225
-             x:1
-             y:titleBar.height + titleBar.y
+        Rectangle{
+            id: bodyRc
+            color: parent.color
+            anchors{
+                left: titleBar.left
+                top: titleBar.bottom
+                right: titleBar.right
+                bottom: parent.bottom
+                bottomMargin: 1
+            }
+            function destoryPlayer(){
+                console.log(2222)
+
+            }
+
+            Component{
+                id: playerComponent
+                Player{
+                    id: playerContainer1
+                    parentWindow: root
+                     width: 400
+                     height: 225
+                     x:1
+                     y:titleBar.height + titleBar.y
+                }
+            }
+            DropArea{
+                anchors.fill: parent
+                onEntered: {
+                    drag.accepted = true
+                }
+
+                onDropped: {
+                    var obj = playerComponent.createObject(root, {x:1, y:0})
+                    obj.signalReqClose.connect(bodyRc.destoryPlayer)
+                }
+            }
         }
 	}
 }
