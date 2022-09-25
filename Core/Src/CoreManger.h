@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
-#include "PlayCore.h"
 #include <string>
+#include "PlayCore.h"
 
 class CoreManger
 {
@@ -12,11 +12,17 @@ public:
 
     void destoryFileInstance(long fileHandle);
 
-    void play(long fileHandle);
+    void play(long fileHandle, EZCore::PLAY_CALLBACK cbk);
+
+    bool pause(long fileHandle);
+
+    bool resume(long fileHandle);
+
+    bool seekTime(long fileHandle, int64_t time);
 
     void refreshCurrentFrame(long fileHandle);
 
-    PlayState getState(long fileHandle);
+    EZCore::PlayState getState(long fileHandle);
 
 private:
     CoreManger();

@@ -14,6 +14,8 @@ public:
     ~TaskThread();
     void addTask(THREADTASK task);
 
+    void addSyncTask(THREADTASK task);
+
     void run();
 
     void stop();

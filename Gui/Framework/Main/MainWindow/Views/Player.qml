@@ -11,9 +11,14 @@ Rectangle {
     property var parentWindow: null
     property PlayerViewModel viewModel: PlayerViewModel{}
     property var playRenderWindow: null
+    property bool isPlaying: false
     color: Qt.rgba(0,1,0,1)
     radius: 4
-
+    property string name: value
+    function dealDropEvent(filePath){
+         fileName.text = filePath.replace("file:///", "")
+        viewModel.dropEventDeal(filePath)
+    }
     Rectangle{
         id: title
         color:  Qt.rgba(45/255,45/255,48/255,1)
@@ -23,7 +28,7 @@ Rectangle {
             right: parent.right
             top:parent.top
         }
-        height: 40
+        height: 32
         MouseArea{
             anchors.fill: parent
             property point clickPos: "0,0"
@@ -32,22 +37,38 @@ Rectangle {
             }
             onPositionChanged: {
                 var delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
-
                 root.x = (root.x + delta.x)
                 root.y = (root.y + delta.y)
-                console.log(delta, root.x, root.y)
             }
             onDoubleClicked: {
 
             }
         }
+
+        Label{
+            id: fileName
+            text: ""
+            anchors{
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                leftMargin: 8
+            }
+            font: GUIFont.SubtitleSemibold12
+            anchors{
+               verticalCenter: parent.verticalCenter
+               left: parent.left
+               leftMargin: 8
+            }
+            color: GUIColor.White00
+        }
+
         GUIImageButton {
             id: closeBtn
             width: 24
             height: 24
             anchors{
                 right: parent.right
-                rightMargin: 8
+                rightMargin: 4
                 verticalCenter: parent.verticalCenter
             }
             defaultColor: GUIColor.Clear
@@ -69,7 +90,7 @@ Rectangle {
             left: parent.left
             right: parent.right
             top:title.bottom
-            bottom: parent.bottom
+            bottom: playControlRc.top
         }
         DropArea{
             anchors.fill: parent
@@ -78,10 +99,108 @@ Rectangle {
             }
 
             onDropped: {
-                viewModel.dropEventDeal(drop.urls[0].toString())
+                dealDropEvent(drop.urls[0].toString())
                 console.log( drop.urls[0].toString())
             }
         }
+    }
+    Rectangle{
+        id: playControlRc
+        color:  Qt.rgba(45/255,45/255,48/255,1)
+        anchors{
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        height: 32
+        GUIImageButton {
+            id: playControlBtn
+            width: 16
+            height: 16
+            anchors{
+                left: parent.left
+                leftMargin: 4
+                verticalCenter: parent.verticalCenter
+            }
+            defaultColor: GUIColor.Clear
+            hoveredBkColor: GUIColor.Clear
+            pressedBkColor: GUIColor.Clear
+            defaultImgPath: root.isPlaying? "qrc:/Res/pause_normal.svg":"qrc:/Res/play_normal.svg"
+            hoveredImgPath: root.isPlaying? "qrc:/Res/pause_hover.svg":"qrc:/Res/play_hover.svg"
+            pressedImgPath: root.isPlaying? "qrc:/Res/pause_hover.svg":"qrc:/Res/play_hover.svg"
+            disabledImgPath: root.isPlaying? "qrc:/Res/pause_normal.svg":"qrc:/Res/play_normal.svg"
+            onClicked: {
+                 var ret = root.isPlaying? viewModel.pause():viewModel.resume()
+                if(ret){
+                    root.isPlaying = !root.isPlaying
+                }
+            }
+        }
+        Slider {
+            id: playProgress
+            value: 0.0
+            property bool needNotifyChange: true
+            property var totalTime: 0
+            anchors{
+                left: playControlBtn.right
+                leftMargin: 4
+                right: processtxt.left
+                rightMargin: 4
+                verticalCenter: parent.verticalCenter
+            }
+            background: Rectangle {
+                x: playProgress.leftPadding
+                y: playProgress.topPadding + playProgress.availableHeight / 2 - height / 2
+                implicitHeight: 4
+                height: implicitHeight
+                radius: 2
+                color: "#bdbebf"
+
+                Rectangle {
+                    width: playProgress.visualPosition * parent.width
+                    height: parent.height
+                    color: "#21be2b"
+                    radius: 2
+                }
+            }
+
+            handle: Rectangle {
+                x: playProgress.leftPadding + playProgress.visualPosition * (playProgress.availableWidth - width)
+                y: playProgress.topPadding + playProgress.availableHeight / 2 - height / 2
+                implicitWidth: 8
+                implicitHeight: 8
+                radius: 4
+                color: control.pressed ? "#f0f0f0" : "#f6f6f6"
+                border.color: "#bdbebf"
+            }
+
+            function setValue(newValue){
+                playProgress.needNotifyChange = false
+                playProgress.value = newValue
+                playProgress.needNotifyChange = true
+            }
+
+            onValueChanged: {
+                console.log(playProgress.value)
+                if(!playProgress.needNotifyChange){
+                    return
+                }
+                viewModel.seekTime(playProgress.value * playProgress.totalTime)
+            }
+       }
+       Text{
+           id: processtxt
+           text:"00:00:00\n00:00:00"
+           anchors{
+               right: parent.right
+               rightMargin: 4
+               verticalCenter: parent.verticalCenter
+           }
+           horizontalAlignment: Text.AlignRight
+           verticalAlignment: Text.AlignVCenter
+           font: GUIFont.ButtonRegular11
+           color: GUIColor.White00
+       }
     }
 
 
@@ -93,5 +212,17 @@ Rectangle {
         root.playRenderWindow.width = Qt.binding(function (){return body.width})
         root.playRenderWindow.height = Qt.binding(function (){return body.height})
         root.playRenderWindow.visible = false
+    }
+
+    Connections{
+        target: viewModel
+        onSignalPlayProgressChanged:{
+            playProgress.setValue(1.0*currentTime/totalTime)
+            playProgress.totalTime = totalTime
+            processtxt.text = viewModel.convertUS2String(currentTime) + "\n" + viewModel.convertUS2String(totalTime)
+        }
+        onSignalPlayStateChanged:{
+            root.isPlaying = isPlaying
+        }
     }
 }

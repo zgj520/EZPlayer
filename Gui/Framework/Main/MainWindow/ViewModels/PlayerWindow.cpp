@@ -1,11 +1,14 @@
 #include "PlayerWindow.h"
-#include "../../Core/Interface/CoreInterface.h"
 #include <QImage>
 #include <QTimer>
 
 PlayerWindow::PlayerWindow(QWindow* parent):QWindow(parent) {
     m_wnd = (HWND)this->winId();
     DragAcceptFiles(m_wnd, true);
+}
+
+void PlayerWindow::setDropCallBack(DROP_CALLBACK cbk) {
+    m_dropCallBack = cbk;
 }
 
 bool PlayerWindow::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
@@ -21,16 +24,17 @@ bool PlayerWindow::nativeEvent(const QByteArray& eventType, void* message, qintp
         }
     }
     else if (msg->message == WM_DROPFILES) {
-        auto s = parent();
-        HDROP hdrop = (HDROP)msg->wParam;
-        char sDropFilePath[MAX_PATH];
-        int iDropFileNums = 0;
-        iDropFileNums = DragQueryFile(hdrop, 0xFFFFFFFF, NULL, NULL);
-        if (iDropFileNums > 0) {
-            DragQueryFile(hdrop, 0, sDropFilePath, sizeof(sDropFilePath));
-            play(sDropFilePath);
+        if (m_dropCallBack != nullptr) {
+            HDROP hdrop = (HDROP)msg->wParam;
+            char sDropFilePath[MAX_PATH];
+            int iDropFileNums = 0;
+            iDropFileNums = DragQueryFile(hdrop, 0xFFFFFFFF, NULL, NULL);
+            if (iDropFileNums > 0) {
+                DragQueryFile(hdrop, 0, sDropFilePath, sizeof(sDropFilePath));
+                m_dropCallBack(sDropFilePath);
+            }
+            DragFinish(hdrop);
         }
-        DragFinish(hdrop);//释放文件名缓冲区
     }
     return QWindow::nativeEvent(eventType,message, result);
 }
@@ -42,7 +46,7 @@ bool PlayerWindow::event(QEvent*ev) {
     return QWindow::event(ev);
 }
 
-void PlayerWindow::play(const std::string& filePath) {
+void PlayerWindow::play(const std::string& filePath, EZCore::PLAY_CALLBACK cbk) {
     if (filePath.empty()) {
         return;
     }
@@ -56,8 +60,20 @@ void PlayerWindow::play(const std::string& filePath) {
     if (m_renderInstance == 0) {
         m_renderInstance = EZCore::createFileInstance(m_filePath, this->winId());
     }
-    EZCore::play(m_renderInstance);
+    EZCore::play(m_renderInstance, cbk);
     m_bOpenGLRender = true;
+}
+
+bool PlayerWindow::resume() {
+    return EZCore::resume(m_renderInstance);
+}
+
+bool PlayerWindow::pause() {
+    return EZCore::pause(m_renderInstance);
+}
+
+bool PlayerWindow::seekTime(int64_t time) {
+    return EZCore::seekTime(m_renderInstance, time);
 }
 
 void PlayerWindow::refreshCurrentFrame() {

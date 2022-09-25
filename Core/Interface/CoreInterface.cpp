@@ -5,12 +5,20 @@ namespace EZCore {
         return CoreManger::instance().createFileInstance(filePath, wndId);
     }
 
-    void play(long fileHandle) {
-        CoreManger::instance().play(fileHandle);
+    void play(long fileHandle, PLAY_CALLBACK cbk) {
+        CoreManger::instance().play(fileHandle, cbk);
     }
 
-    void pause(long fileHandle) {
+    bool pause(long fileHandle) {
+        return CoreManger::instance().pause(fileHandle);
+    }
 
+    bool resume(long fileHandle) {
+        return CoreManger::instance().resume(fileHandle);
+    }
+
+    bool seekTime(long fileHandle, int64_t time) {
+        return CoreManger::instance().seekTime(fileHandle, time);
     }
 
     void refreshCurrentFrame(long fileHandle) {

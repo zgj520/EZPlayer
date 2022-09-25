@@ -1,6 +1,7 @@
 #ifndef COREINTERFACE_H_
 #define COREINTERFACE_H_
 #include <string>
+#include <functional>
 
 #ifdef CORE_EXPORT_API
 #define EZCORE_EXPORT __declspec(dllexport)
@@ -8,20 +9,25 @@
 #define EZCORE_EXPORT __declspec(dllimport)
 #endif // CORE_EXPORT
 
-enum PlayState{
-    PlayState_None,
-    PlayState_Ready,
-    PlayState_Playing,
-    PlayState_Paused,
-    PlayState_Stop
-};
-
 namespace EZCore {
+    enum PlayState {
+        PlayState_None,
+        PlayState_Ready,
+        PlayState_Playing,
+        PlayState_Paused,
+        PlayState_EOF
+    };
+    using PLAY_CALLBACK = std::function<void(int64_t, int64_t)>;
+
     long EZCORE_EXPORT createFileInstance(const std::string &filePath, long wndId);
 
-    void EZCORE_EXPORT play(long fileHandle);
+    void EZCORE_EXPORT play(long fileHandle, PLAY_CALLBACK cbk);
 
-    void EZCORE_EXPORT pause(long fileHandle);
+    bool EZCORE_EXPORT pause(long fileHandle);
+
+    bool EZCORE_EXPORT resume(long fileHandle);
+
+    bool EZCORE_EXPORT seekTime(long fileHandle, int64_t time);
 
     void EZCORE_EXPORT refreshCurrentFrame(long fileHandle);
 

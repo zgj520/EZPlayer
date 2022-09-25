@@ -20,11 +20,18 @@ enum HWAccelID{
     HWAccel_CUVID
 };
 
-struct HWDevice
-{
+struct HWDevice{
     const char* device;
     enum HWAccelID id;
     int adapter;
+};
+
+struct MediaInfo {
+    float fps = 0;
+    int64_t duration = 0;
+    std::string name;
+    std::string long_name;
+    int64_t frameCount = 0;
 };
 
 class FFVideoDecoder
@@ -33,7 +40,11 @@ public:
     FFVideoDecoder(const std::string& filePath);
     ~FFVideoDecoder();
 
-    AVFrame* getOneFrame();
+    AVFrame* getOneFrame(int64_t &timesample);
+
+    bool seekTime(int64_t dsttime);
+
+    bool getMediaInfo(MediaInfo& info);
 
     bool isEOF();
 
@@ -44,6 +55,7 @@ public:
 private:
     bool init();
     bool initBySoft();
+    bool isValid();
 
 private:
     std::string m_filePath = "";
@@ -53,15 +65,19 @@ private:
     int m_videoStreamIndex = -1;
 
     std::thread* m_pThread = nullptr;
-    bool m_bStop = false;
-    std::condition_variable m_decodeConditionVar;
-    std::mutex m_decodeMutex;
-    std::atomic_bool m_isEOF = {false};
+    std::atomic_bool m_bStop = false;
+    std::atomic_bool m_isEOF = { false };
 
+
+    std::condition_variable m_frameCacheConditionVar;
+    std::mutex m_frameCacheMutex;
     std::vector<AVFrame*> m_vtFrameCache;
 
-    std::condition_variable m_getFrameConditionVar;
-    std::mutex m_getFrameMutex;
+    std::atomic_bool m_isPaused = { false };
+    std::condition_variable m_pauseConditionVar;
+    std::mutex m_pauseMutex;
+
+
 };
 
 #endif

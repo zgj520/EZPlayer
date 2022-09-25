@@ -23,12 +23,36 @@ void CoreManger::destoryFileInstance(long fileHandle) {
     m_mapFileInstance.erase(iter);
 }
 
-void CoreManger::play(long fileHandle) {
+void CoreManger::play(long fileHandle, EZCore::PLAY_CALLBACK cbk) {
     auto iter = m_mapFileInstance.find(fileHandle);
     if (iter == m_mapFileInstance.end()) {
         return;
     }
-    iter->second->play();
+    iter->second->play(cbk);
+}
+
+bool CoreManger::pause(long fileHandle) {
+    auto iter = m_mapFileInstance.find(fileHandle);
+    if (iter == m_mapFileInstance.end()) {
+        return false;
+    }
+    return iter->second->pause();
+}
+
+bool CoreManger::resume(long fileHandle) {
+    auto iter = m_mapFileInstance.find(fileHandle);
+    if (iter == m_mapFileInstance.end()) {
+        return false;
+    }
+    return iter->second->resume();
+}
+
+bool CoreManger::seekTime(long fileHandle, int64_t time) {
+    auto iter = m_mapFileInstance.find(fileHandle);
+    if (iter == m_mapFileInstance.end()) {
+        return false;
+    }
+    return iter->second->seekTime(time);
 }
 
 void CoreManger::refreshCurrentFrame(long fileHandle) {
@@ -39,10 +63,10 @@ void CoreManger::refreshCurrentFrame(long fileHandle) {
     iter->second->refreshCurrentFrame();
 }
 
-PlayState CoreManger::getState(long fileHandle) {
+EZCore::PlayState CoreManger::getState(long fileHandle) {
     auto iter = m_mapFileInstance.find(fileHandle);
     if (iter == m_mapFileInstance.end()) {
-        return PlayState_None;
+        return EZCore::PlayState_None;
     }
     iter->second->getState();
 }

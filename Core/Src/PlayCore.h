@@ -13,23 +13,31 @@ public:
 
     ~PlayCore();
 
-    void play();
+    void play(EZCore::PLAY_CALLBACK cbk);
 
-    void pause();
+    bool pause();
+
+    bool resume();
+
+    bool seekTime(int64_t time);
 
     void refreshCurrentFrame();
 
-    PlayState getState();
+    EZCore::PlayState getState();
 
 private:
     void timeOClock();
 
+    void showNextFrame();
+
 private:
     FFVideoDecoder* m_pDecoder = nullptr;
     VideoBaseRender* m_pRender = nullptr;
-    PlayState m_state = PlayState_None;
+    EZCore::PlayState m_state = EZCore::PlayState_None;
 
     OClock* m_pClock = nullptr;
     TaskThread* m_glThread = nullptr;
     AVFrame* m_lastFrame = nullptr;
+
+    EZCore::PLAY_CALLBACK m_playcbk = nullptr;
 };

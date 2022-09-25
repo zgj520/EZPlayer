@@ -22,6 +22,18 @@ void TaskThread::addTask(THREADTASK task) {
     m_ConditionVar.notify_one();
 }
 
+void TaskThread::addSyncTask(THREADTASK task) {
+    std::mutex syncMutex;
+    std::condition_variable syncConditionVar;
+    THREADTASK syncTask = [task, &syncConditionVar]() {
+        task();
+        syncConditionVar.notify_one();
+    };
+    addTask(syncTask);
+    std::unique_lock<std::mutex> uniqueLock(syncMutex);
+    syncConditionVar.wait(uniqueLock);
+}
+
 void TaskThread::run() {
     while (!m_bStop) {
         THREADTASK task = nullptr;

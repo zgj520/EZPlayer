@@ -96,6 +96,7 @@ Window {
 
                 onDropped: {
                     var obj = playerComponent.createObject(root, {x:1, y:0})
+                    obj.dealDropEvent(drop.urls[0].toString())
                     obj.signalReqClose.connect(bodyRc.destoryPlayer)
                 }
             }
