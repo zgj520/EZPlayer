@@ -7,6 +7,12 @@ PlayerWindow::PlayerWindow(QWindow* parent):QWindow(parent) {
     DragAcceptFiles(m_wnd, true);
 }
 
+PlayerWindow::~PlayerWindow() {
+    if (m_renderInstance > 0) {
+        EZCore::destoryFileInstance(m_renderInstance);
+    }
+}
+
 void PlayerWindow::setDropCallBack(DROP_CALLBACK cbk) {
     m_dropCallBack = cbk;
 }

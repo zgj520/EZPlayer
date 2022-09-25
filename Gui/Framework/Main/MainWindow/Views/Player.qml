@@ -19,6 +19,28 @@ Rectangle {
          fileName.text = filePath.replace("file:///", "")
         viewModel.dropEventDeal(filePath)
     }
+    MouseArea{
+        anchors.fill: parent
+        hoverEnabled: true
+        onPositionChanged: {
+            if(mouseX > width - 8 && mouseY >= height - 8){
+                cursorShape = Qt.SizeFDiagCursor
+            }
+            else{
+                cursorShape = Qt.ArrowCursor
+            }
+
+            if(mouse.buttons & Qt.LeftButton){
+                root.width = mouseX
+                root.height = mouseY
+                console.log(width, height)
+            }
+        }
+        onExited: {
+            cursorShape = Qt.ArrowCursor
+        }
+    }
+
     Rectangle{
         id: title
         color:  Qt.rgba(45/255,45/255,48/255,1)
@@ -79,7 +101,8 @@ Rectangle {
             pressedImgPath: "qrc:/Res/close.svg"
             disabledImgPath: "qrc:/Res/close.svg"
             onClicked: {
-                root.signalReqClose()
+                root.destroy()
+
             }
         }
     }

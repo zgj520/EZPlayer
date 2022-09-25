@@ -5,7 +5,7 @@ class YUV420PToRGBARender: public VideoBaseRender
 {
 public:
     YUV420PToRGBARender(long winid);
-    ~YUV420PToRGBARender() {};
+    ~YUV420PToRGBARender();
 
     void render(AVFrame* frame) override;
 

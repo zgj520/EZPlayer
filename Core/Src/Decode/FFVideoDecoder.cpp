@@ -59,6 +59,7 @@ FFVideoDecoder::~FFVideoDecoder(){
         m_pThread->join();
         delete m_pThread;
     }
+    clearCache();
     av_buffer_unref(&m_pCodecContext->hw_device_ctx);
     avcodec_free_context(&m_pCodecContext);
     avformat_close_input(&m_pFormatContext);
@@ -122,19 +123,20 @@ bool FFVideoDecoder::seekTime(int64_t dsttime) {
     if (!isValid()) {
         return false;
     }
+    int ret = 0;
     {
+        std::unique_lock<std::mutex> uniqueLock(m_decodeMutex);
         avcodec_flush_buffers(m_pCodecContext);
-    }
-    AVStream* stream = *(m_pFormatContext->streams);
-    auto time_base = stream->time_base;
-    auto seekTime = av_rescale_q(dsttime, AVRational{ 1, AV_TIME_BASE }, time_base);
-    int ret = avformat_seek_file(m_pFormatContext, stream->index, INT_MIN, seekTime, INT_MAX, AVSEEK_FLAG_BACKWARD);
-    if (ret < 0) {
-        ret = av_seek_frame(m_pFormatContext, stream->index, seekTime, AVSEEK_FLAG_BACKWARD);
+        AVStream* stream = *(m_pFormatContext->streams);
+        auto time_base = stream->time_base;
+        auto seekTime = av_rescale_q(dsttime, AVRational{ 1, AV_TIME_BASE }, time_base);
+        int ret = avformat_seek_file(m_pFormatContext, stream->index, INT_MIN, seekTime, INT_MAX, AVSEEK_FLAG_BACKWARD);
+        if (ret < 0) {
+            ret = av_seek_frame(m_pFormatContext, stream->index, seekTime, AVSEEK_FLAG_BACKWARD);
+        }
     }
     if (ret >= 0) {
-        std::unique_lock<std::mutex> uniqueLock(m_frameCacheMutex);
-        m_vtFrameCache.clear();
+        clearCache();
         m_isEOF = false;
     }
     return ret >= 0;
@@ -282,30 +284,44 @@ bool FFVideoDecoder::isValid() {
     return true;
 }
 
+void FFVideoDecoder::clearCache() {
+    std::unique_lock<std::mutex> uniqueLock(m_frameCacheMutex);
+    for (auto frame: m_vtFrameCache) {
+        freeOneFrame(frame);
+    }
+    m_vtFrameCache.clear();
+}
+
 void FFVideoDecoder::decodeThreadFunc() {
-    AVPacket packet;
     while (!m_bStop) {
-        if (av_read_frame(m_pFormatContext, &packet) < 0) {
+        std::unique_lock<std::mutex> decodeLock(m_decodeMutex);
+        AVPacket* packet = av_packet_alloc();
+        if (av_read_frame(m_pFormatContext, packet) < 0) {
             std::unique_lock<std::mutex> uniqueLock(m_frameCacheMutex);
             m_isEOF = true;
+            decodeLock.unlock();
             m_frameCacheConditionVar.wait(uniqueLock);
+            decodeLock.lock();
             continue;
         }
 
         m_isEOF = false;
-        if (m_videoStreamIndex != packet.stream_index) {
-            av_packet_unref(&packet);
+        if (m_videoStreamIndex != packet->stream_index) {
+            av_packet_free(&packet);
             continue;
         }
 
-        int ret = avcodec_send_packet(m_pCodecContext, &packet);
+        int ret = avcodec_send_packet(m_pCodecContext, packet);
         if (ret < 0) {
+            av_packet_free(&packet);
             break;
         }
         {
             std::unique_lock<std::mutex> uniqueLock(m_frameCacheMutex);
             if (m_vtFrameCache.size() >= 3) {
+                decodeLock.unlock();
                 m_frameCacheConditionVar.wait(uniqueLock);
+                decodeLock.lock();
             }
         }
         while (!m_bStop) {
@@ -325,10 +341,7 @@ void FFVideoDecoder::decodeThreadFunc() {
             }
             m_vtFrameCache.push_back(pFrame);
         }
-        av_packet_unref(&packet);
+        av_packet_free(&packet);
     }
-    packet.data = NULL;
-    packet.size = 0;
-    av_packet_unref(&packet);
     return;
 }

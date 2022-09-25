@@ -6,6 +6,13 @@ PlayerViewModel::PlayerViewModel(QObject* parent):QObject(parent) {
     qRegisterMetaType<int64_t>("int64_t"); 
 }
 
+PlayerViewModel::~PlayerViewModel() {
+    if (m_pPlayRenderWindow) {
+        delete m_pPlayRenderWindow;
+        m_pPlayRenderWindow = nullptr;
+    }
+}
+
 PlayerWindow* PlayerViewModel::playerRenderWindow() {
     return m_pPlayRenderWindow;
 }

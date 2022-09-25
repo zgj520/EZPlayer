@@ -56,6 +56,7 @@ private:
     bool init();
     bool initBySoft();
     bool isValid();
+    void clearCache();
 
 private:
     std::string m_filePath = "";
@@ -73,11 +74,7 @@ private:
     std::mutex m_frameCacheMutex;
     std::vector<AVFrame*> m_vtFrameCache;
 
-    std::atomic_bool m_isPaused = { false };
-    std::condition_variable m_pauseConditionVar;
-    std::mutex m_pauseMutex;
-
-
+    std::mutex m_decodeMutex;
 };
 
 #endif

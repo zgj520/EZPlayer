@@ -33,6 +33,18 @@ void main()
 })";
 }
 
+YUV420PToRGBARender::~YUV420PToRGBARender() {
+    if (m_yTextureId > 0) {
+        glDeleteTextures(1, &m_yTextureId);
+    }
+    if (m_uTextureId > 0) {
+        glDeleteTextures(1, &m_uTextureId);
+    }
+    if (m_vTextureId > 0) {
+        glDeleteTextures(1, &m_vTextureId);
+    }
+}
+
 GLuint YUV420PToRGBARender::genTexture(int width, int height) {
     GLuint texture_ID = 0;
     glGenTextures(1, &texture_ID);
@@ -138,6 +150,7 @@ void YUV420PToRGBARender::render(AVFrame* frame) {
 
     eglSwapBuffers(m_display, m_surface);
 
+    glDeleteVertexArrays(1, &m_vertex_array);
     glDeleteBuffers(1, &m_vertex_buffer);
     glDeleteBuffers(1, &m_index_buffer);
 }

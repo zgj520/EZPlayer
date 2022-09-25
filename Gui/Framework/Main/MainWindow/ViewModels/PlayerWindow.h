@@ -12,6 +12,8 @@ class PlayerWindow : public QWindow {
 public:
     PlayerWindow(QWindow* parent);
 
+    ~PlayerWindow();
+
     void setDropCallBack(DROP_CALLBACK cbk);
 
     void play(const std::string& filePath, EZCore::PLAY_CALLBACK cbk);

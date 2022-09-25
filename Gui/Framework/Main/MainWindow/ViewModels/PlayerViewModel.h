@@ -12,6 +12,8 @@ class PlayerViewModel : public QObject {
 public:
     PlayerViewModel(QObject* parent = nullptr);
 
+    ~PlayerViewModel();
+
     Q_PROPERTY(PlayerWindow* playerRenderWindow READ playerRenderWindow);
 
     Q_PROPERTY(QWindow* playerLayerWindow READ playerLayerWindow);

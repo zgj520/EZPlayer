@@ -22,6 +22,9 @@ void main()
 }
 
 VideoBaseRender::~VideoBaseRender() {
+    glDeleteProgram(m_programId);
+    glDeleteShader(m_vertShader);
+    glDeleteShader(m_fragShader);
     destroyGL();
 }
 
