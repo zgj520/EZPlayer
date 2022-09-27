@@ -72,10 +72,6 @@ Window {
                 bottom: parent.bottom
                 bottomMargin: 1
             }
-            function destoryPlayer(){
-                console.log(2222)
-
-            }
 
             Component{
                 id: playerComponent
@@ -83,7 +79,6 @@ Window {
                     id: playerContainer1
                     parentWindow: root
                      width: 400
-                     height: 225
                      x:1
                      y:titleBar.height + titleBar.y
                 }

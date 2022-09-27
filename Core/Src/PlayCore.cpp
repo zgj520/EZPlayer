@@ -16,7 +16,7 @@ void PlayCore::timeOClock() {
 }
 
 void PlayCore::showNextFrame() {
-    MediaInfo info;
+    EZCore::MediaInfo info;
     m_pDecoder->getMediaInfo(info);
     int64_t timesample = 0;
     auto frame = m_pDecoder->getOneFrame(timesample);

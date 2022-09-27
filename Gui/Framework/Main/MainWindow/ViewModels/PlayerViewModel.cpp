@@ -31,6 +31,9 @@ void PlayerViewModel::createPlayerRenderWindow(QQuickWindow* parent) {
 
 void PlayerViewModel::dropEventDeal(const QString& files){
     auto file = files.right(files.size() - 8).toStdString();
+    EZCore::MediaInfo info;
+    EZCore::getMediaInfo(file, info);
+    emit signalResolutionChanged(info.width, info.height);
     m_pPlayRenderWindow->play(file, PLAY_CALL_BACK_FUNC);
     m_pPlayRenderWindow->show();
     emit signalPlayStateChanged(true);
@@ -75,6 +78,9 @@ void PlayerViewModel::playCallBack(int64_t currentTime, int64_t totalTime) {
 
 void PlayerViewModel::playWindowDropCallBack(const std::string& file) {
     if (m_pPlayRenderWindow) {
+        EZCore::MediaInfo info;
+        EZCore::getMediaInfo(file, info);
+        emit signalResolutionChanged(info.width, info.height);
         m_pPlayRenderWindow->play(file, PLAY_CALL_BACK_FUNC);
         m_pPlayRenderWindow->show();
         emit signalPlayStateChanged(true);

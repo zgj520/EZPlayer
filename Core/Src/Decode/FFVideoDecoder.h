@@ -11,6 +11,7 @@ extern "C" {
 #include "libavutil/imgutils.h"
 #include "libswscale/swscale.h"
 }
+#include "../Interface/CoreInterface.h"
 
 enum HWAccelID{
     HWAccel_QSV,
@@ -26,14 +27,6 @@ struct HWDevice{
     int adapter;
 };
 
-struct MediaInfo {
-    float fps = 0;
-    int64_t duration = 0;
-    std::string name;
-    std::string long_name;
-    int64_t frameCount = 0;
-};
-
 class FFVideoDecoder
 {
 public:
@@ -44,7 +37,7 @@ public:
 
     bool seekTime(int64_t dsttime);
 
-    bool getMediaInfo(MediaInfo& info);
+    bool getMediaInfo(EZCore::MediaInfo& info);
 
     bool isEOF();
 

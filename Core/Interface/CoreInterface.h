@@ -17,6 +17,15 @@ namespace EZCore {
         PlayState_Paused,
         PlayState_EOF
     };
+    struct MediaInfo {
+        float fps = 0;
+        int64_t duration = 0;
+        std::string name;
+        std::string long_name;
+        int64_t frameCount = 0;
+        int width = 0;
+        int height = 0;
+    };
     using PLAY_CALLBACK = std::function<void(int64_t, int64_t)>;
 
     long EZCORE_EXPORT createFileInstance(const std::string &filePath, long wndId);
@@ -34,6 +43,9 @@ namespace EZCore {
     PlayState EZCORE_EXPORT getState(long fileHandle);
 
     void EZCORE_EXPORT destoryFileInstance(long fileHandle);
+
+    // Utils
+    bool EZCORE_EXPORT getMediaInfo(const std::string& filePath, MediaInfo& info);
 }
 
 #endif

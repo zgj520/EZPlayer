@@ -7,18 +7,19 @@ import GUIKit 1.0
 
 Rectangle {
 	id:root
+    color: Qt.rgba(0,1,0,1)
+    radius: 4
     signal signalReqClose()
     property var parentWindow: null
     property PlayerViewModel viewModel: PlayerViewModel{}
     property var playRenderWindow: null
     property bool isPlaying: false
-    color: Qt.rgba(0,1,0,1)
-    radius: 4
-    property string name: value
+    property var wh: 4/3.0
     function dealDropEvent(filePath){
          fileName.text = filePath.replace("file:///", "")
         viewModel.dropEventDeal(filePath)
     }
+    height: (width-title.height-playControlRc.height)/root.wh + title.height + playControlRc.height
     MouseArea{
         anchors.fill: parent
         hoverEnabled: true
@@ -32,8 +33,8 @@ Rectangle {
 
             if(mouse.buttons & Qt.LeftButton){
                 root.width = mouseX
-                root.height = mouseY
-                console.log(width, height)
+                //root.height = mouseY
+                console.log(width, height, root.wh)
             }
         }
         onExited: {
@@ -82,6 +83,36 @@ Rectangle {
                leftMargin: 8
             }
             color: GUIColor.White00
+        }
+
+        GUIImageButton {
+            id: infoBtn
+            width: 24
+            height: 24
+            mouseCursorShape: Qt.PointingHandCursor
+            anchors{
+                right: closeBtn.left
+                rightMargin: 4
+                verticalCenter: parent.verticalCenter
+            }
+            defaultColor: GUIColor.Clear
+            hoveredBkColor: GUIColor.Clear
+            pressedBkColor: GUIColor.Clear
+            defaultImgPath: "qrc:/Res/info.svg"
+            hoveredImgPath: "qrc:/Res/info.svg"
+            pressedImgPath: "qrc:/Res/info.svg"
+            disabledImgPath: "qrc:/Res/info.svg"
+            Component{
+                id: infoComponent
+                MediaInfoDlg{
+                    id: infoDlg
+                }
+            }
+            onClicked: {
+                 var obj = infoComponent.createObject(root.parent)
+                obj.parent = root.parent
+                obj.show()
+            }
         }
 
         GUIImageButton {
@@ -204,7 +235,7 @@ Rectangle {
             }
 
             onValueChanged: {
-                console.log(playProgress.value)
+                //console.log(playProgress.value)
                 if(!playProgress.needNotifyChange){
                     return
                 }
@@ -246,6 +277,10 @@ Rectangle {
         }
         onSignalPlayStateChanged:{
             root.isPlaying = isPlaying
+        }
+
+        onSignalResolutionChanged:{
+            root.wh = 1.0*rw/rh
         }
     }
 }

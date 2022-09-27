@@ -37,6 +37,8 @@ public:
 signals:
     void signalPlayProgressChanged(int64_t currentTime, int64_t totalTime);
 
+    void signalResolutionChanged(int rw, int rh);
+
     void signalPlayStateChanged(bool isPlaying);
 
 private:

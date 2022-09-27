@@ -6,10 +6,12 @@ Rectangle {
 	id:root
     height: 40
     color: GUIColor.Black1
+    property string title:  qsTr("EZPlayer")
+    property var titleFont: GUIFont.H5Headline16
     signal signalReqClose()
     Text {
-        text: qsTr("EZPlayer")
-        font: GUIFont.H5Headline16
+        text:root.title
+        font: root.titleFont
         anchors{
            verticalCenter: parent.verticalCenter
            left: parent.left

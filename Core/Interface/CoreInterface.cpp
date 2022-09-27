@@ -1,5 +1,7 @@
 #include "CoreInterface.h"
 #include "CoreManger.h"
+#include "../Src/Decode/FFUtils.h"
+
 namespace EZCore {
     long createFileInstance(const std::string& filePath, long wndId) {
         return CoreManger::instance().createFileInstance(filePath, wndId);
@@ -31,5 +33,9 @@ namespace EZCore {
 
     void destoryFileInstance(long fileHandle) {
         CoreManger::instance().destoryFileInstance(fileHandle);
+    }
+
+    bool getMediaInfo(const std::string& filePath, MediaInfo& info) {
+        return FFUtils::getInstance()->getMediaInfo(filePath, info);
     }
 }

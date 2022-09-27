@@ -103,7 +103,7 @@ AVFrame* FFVideoDecoder::getOneFrame(int64_t& timesample) {
     return nullptr;
 }
 
-bool FFVideoDecoder::getMediaInfo(MediaInfo& info) {
+bool FFVideoDecoder::getMediaInfo(EZCore::MediaInfo& info) {
     if (!isValid()) {
         return false;
     }

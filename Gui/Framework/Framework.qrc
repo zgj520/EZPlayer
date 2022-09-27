@@ -9,5 +9,7 @@
         <file>Res/pause_normal.svg</file>
         <file>Res/play_hover.svg</file>
         <file>Res/play_normal.svg</file>
+        <file>Res/info.svg</file>
+        <file>Main/MainWindow/Views/MediaInfoDlg.qml</file>
     </qresource>
 </RCC>

@@ -48,6 +48,7 @@ public:
     GUI_COLOR_DEFINE(Yellow0, "#d4a500");
     GUI_COLOR_DEFINE(White00, "#ffffff");
     GUI_COLOR_DEFINE(White0, "#fafafa");
+    GUI_COLOR_DEFINE(White08, "#fafafa08");
 
 protected:
     GUIColor() = default;
