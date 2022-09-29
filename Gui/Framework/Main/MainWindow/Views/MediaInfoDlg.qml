@@ -40,6 +40,9 @@ Window {
         }
         Rectangle{
             id: bodyRc
+            property int rowHeight: 32
+            property int rowSpacing: 16
+            property int colSpacing :24
             color: parent.color
             anchors{
                 left: titleBar.left
@@ -48,6 +51,40 @@ Window {
                 bottom: parent.bottom
                 bottomMargin: 1
             }
+
+            Column {
+                anchors{
+                    top: parent.top
+                    topMargin: 8
+                    bottom: parent.bottom
+                    bottomMargin: 8
+                    left: parent.left
+                    right: parent.right
+                }
+
+                spacing: 4
+
+                Repeater {
+                    model: ["apples", "oranges", "pears"]
+                    Row {
+                        Text {
+                            width: bodyRc.width/2
+                            text: "Data："
+                            font: GUIFont.SubtitleRegular12
+                            color: GUIColor.White00
+                            horizontalAlignment: Text.AlignRight
+                        }
+                        Text {
+                            width: bodyRc.width/2
+                            text: modelData
+                            font: GUIFont.SubtitleRegular12
+                            color: GUIColor.White00
+                        }
+                    }
+                }
+            }
         }
+
+
 	}
 }

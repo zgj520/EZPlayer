@@ -224,7 +224,7 @@ Rectangle {
                 implicitWidth: 8
                 implicitHeight: 8
                 radius: 4
-                color: control.pressed ? "#f0f0f0" : "#f6f6f6"
+                color: playProgress.pressed ? "#f0f0f0" : "#f6f6f6"
                 border.color: "#bdbebf"
             }
 
