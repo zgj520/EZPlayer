@@ -36,6 +36,7 @@ namespace EZCore {
         info.duration = pFormatContext->duration;
         info.width = pCodecCtx->width;
         info.height = pCodecCtx->height;
+        info.fps = pFormatContext->streams[videoStreamIndex]->avg_frame_rate.num/ pFormatContext->streams[videoStreamIndex]->avg_frame_rate.den;
 
         avcodec_free_context(&pCodecCtx);
         

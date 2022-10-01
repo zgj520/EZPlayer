@@ -65,18 +65,18 @@ Window {
                 spacing: 4
 
                 Repeater {
-                    model: ["apples", "oranges", "pears"]
+                    model: viewModel.MediaInfoKeyValueList
                     Row {
                         Text {
                             width: bodyRc.width/2
-                            text: "Data："
+                            text: modelData.key+"："
                             font: GUIFont.SubtitleRegular12
                             color: GUIColor.White00
                             horizontalAlignment: Text.AlignRight
                         }
                         Text {
                             width: bodyRc.width/2
-                            text: modelData
+                            text: modelData.value
                             font: GUIFont.SubtitleRegular12
                             color: GUIColor.White00
                         }

@@ -4,6 +4,7 @@
 #define PLAY_CALL_BACK_FUNC std::bind(&PlayerViewModel::playCallBack, this, std::placeholders::_1, std::placeholders::_2)
 PlayerViewModel::PlayerViewModel(QObject* parent):QObject(parent) {
     qRegisterMetaType<int64_t>("int64_t"); 
+    qRegisterMetaType<MediaInfoKeyValue>("MediaInfoKeyValue");
 }
 
 PlayerViewModel::~PlayerViewModel() {
@@ -31,9 +32,7 @@ void PlayerViewModel::createPlayerRenderWindow(QQuickWindow* parent) {
 
 void PlayerViewModel::dropEventDeal(const QString& files){
     auto file = files.right(files.size() - 8).toStdString();
-    EZCore::MediaInfo info;
-    EZCore::getMediaInfo(file, info);
-    emit signalResolutionChanged(info.width, info.height);
+    updateMediaInfo(file);
     m_pPlayRenderWindow->play(file, PLAY_CALL_BACK_FUNC);
     m_pPlayRenderWindow->show();
     emit signalPlayStateChanged(true);
@@ -78,11 +77,20 @@ void PlayerViewModel::playCallBack(int64_t currentTime, int64_t totalTime) {
 
 void PlayerViewModel::playWindowDropCallBack(const std::string& file) {
     if (m_pPlayRenderWindow) {
-        EZCore::MediaInfo info;
-        EZCore::getMediaInfo(file, info);
-        emit signalResolutionChanged(info.width, info.height);
+        updateMediaInfo(file);
         m_pPlayRenderWindow->play(file, PLAY_CALL_BACK_FUNC);
         m_pPlayRenderWindow->show();
         emit signalPlayStateChanged(true);
     }
+}
+
+void PlayerViewModel::updateMediaInfo(const std::string& file) {
+    EZCore::getMediaInfo(file, m_mediaInfo);
+    emit signalResolutionChanged(m_mediaInfo.width, m_mediaInfo.height);
+    m_mediaoInfoKeyValuelist.clear();
+    m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("分辨率"), QString("%1 x %2").arg(m_mediaInfo.width).arg(m_mediaInfo.height)});
+    m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("帧率"), QString("%1").arg(m_mediaInfo.fps) });
+    m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("时长"), QString("%1 (us)").arg(m_mediaInfo.duration) });
+    m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("总帧数"), QString("%1").arg(m_mediaInfo.frameCount)});
+
 }
