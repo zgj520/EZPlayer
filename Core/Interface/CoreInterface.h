@@ -25,6 +25,8 @@ namespace EZCore {
         int64_t frameCount = 0;
         int width = 0;
         int height = 0;
+        int displayWidth = 0;
+        int displayHeight = 0;
     };
     using PLAY_CALLBACK = std::function<void(int64_t, int64_t)>;
 

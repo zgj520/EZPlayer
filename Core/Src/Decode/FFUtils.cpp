@@ -24,23 +24,25 @@ namespace EZCore {
         if (videoStreamIndex < 0 || pCodec == nullptr) {
             return false;
         }
+        auto pVideoStream = pFormatContext->streams[videoStreamIndex];
         
         AVCodecContext* pCodecCtx = avcodec_alloc_context3(pCodec);
         if (pCodecCtx == nullptr) {
             return false;
         }
-        ret = avcodec_parameters_to_context(pCodecCtx, pFormatContext->streams[videoStreamIndex]->codecpar);
+        ret = avcodec_parameters_to_context(pCodecCtx, pVideoStream->codecpar);
         if (ret < 0) {
             return false;
         }
         info.duration = pFormatContext->duration;
         info.width = pCodecCtx->width;
         info.height = pCodecCtx->height;
-        info.fps = pFormatContext->streams[videoStreamIndex]->avg_frame_rate.num/ pFormatContext->streams[videoStreamIndex]->avg_frame_rate.den;
+        auto avFPS = pFormatContext->streams[videoStreamIndex]->avg_frame_rate;
+        info.fps = 1.0* avFPS.num/ avFPS.den;
+
+        av_reduce(&info.displayWidth, &info.displayHeight, pCodecCtx->width * (int64_t)pVideoStream->sample_aspect_ratio.num, pCodecCtx->height * (int64_t)pVideoStream->sample_aspect_ratio.den, 1024 * 1024);
 
         avcodec_free_context(&pCodecCtx);
-        
-
         avformat_close_input(&pFormatContext);
         return true;
     }

@@ -1,7 +1,7 @@
 #include "BMPImageRender.h"
 
 BMPImageRender::BMPImageRender(long windid, const std::string& filePath)
-    :VideoBaseRender(windid),
+    :VideoBaseRender(windid, AV_PIX_FMT_YUV420P),
     m_filePath(filePath){
 }
 void BMPImageRender::render() {

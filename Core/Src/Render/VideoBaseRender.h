@@ -12,7 +12,7 @@ extern "C" {
 class VideoBaseRender
 {
 public:
-    VideoBaseRender(long winid);
+    VideoBaseRender(long winid, AVPixelFormat format);
     virtual ~VideoBaseRender();
 
     virtual void render();
@@ -22,6 +22,8 @@ public:
     virtual bool init();
 
     virtual bool compileSharder(GLuint* shader, GLenum shaderType, const char* source);
+
+    virtual AVPixelFormat getRenderType() { return m_renderFormat; }
 
 protected:
     GLint createTextureFromImgaeData(void* imageData, int width, int height);
@@ -45,4 +47,5 @@ protected:
 
     ID3D11Device* m_glD3d11Device = nullptr;
     IDirect3DDevice9* m_glD3d9Device = nullptr;
+    AVPixelFormat m_renderFormat = AV_PIX_FMT_YUV420P;
 };

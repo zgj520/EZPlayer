@@ -5,8 +5,9 @@
 #include "../../Log/Interface/EZLogInterface.h"
 #include <vector>
 
-VideoBaseRender::VideoBaseRender(long windid) {
+VideoBaseRender::VideoBaseRender(long windid, AVPixelFormat format) {
     m_windid = windid;
+    m_renderFormat = format;
     kVS = R"(attribute vec4 vPosition;
 void main()
 {

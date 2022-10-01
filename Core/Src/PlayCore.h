@@ -30,7 +30,10 @@ private:
 
     void showNextFrame();
 
+    bool initRender(AVPixelFormat format);
+
 private:
+    long m_wndId = 0;
     FFVideoDecoder* m_pDecoder = nullptr;
     VideoBaseRender* m_pRender = nullptr;
     EZCore::PlayState m_state = EZCore::PlayState_None;

@@ -2,6 +2,7 @@
 #include "Render\BMPImageRender.h"
 #include "Render\D3D11NV12ToRGBARender.h"
 #include "Render\YUV420PToRGBARender.h"
+#include "Render\NV12ToRGBARender.h"
 
 void PlayCore::timeOClock() {
     m_glThread->addTask([this]() {
@@ -36,6 +37,41 @@ void PlayCore::showNextFrame() {
         printf("time:%lld", timesample);
         m_playcbk(timesample, info.duration);
     }
+}
+
+bool PlayCore::initRender(AVPixelFormat format) {
+    if (m_pRender != nullptr) {
+        if (m_pRender->getRenderType() == format) {
+            return m_pRender;
+        }
+        else {
+            delete m_pRender;
+            m_pRender = nullptr;
+        }
+    }
+    switch (format) {
+    case AV_PIX_FMT_YUV420P:
+        m_pRender = new YUV420PToRGBARender(m_wndId);
+        break;
+    case AV_PIX_FMT_NV12:
+        m_pRender = new NV12ToRGBARender(m_wndId);
+        break;
+    case AV_PIX_FMT_NV21:
+    case AV_PIX_FMT_QSV:
+    case AV_PIX_FMT_CUDA:
+    case AV_PIX_FMT_D3D11:
+        break;
+    }
+    if (m_pRender == nullptr) {
+        return false;
+    }
+    m_glThread = new TaskThread;
+    m_glThread->addTask([this]() {
+        m_pRender->init();
+        m_state = EZCore::PlayState_Ready;
+        m_pClock = new OClock(33, std::bind(&PlayCore::timeOClock, this));
+    });
+    return true;
 }
 
 void PlayCore::play(EZCore::PLAY_CALLBACK cbk) {
@@ -112,15 +148,9 @@ EZCore::PlayState PlayCore::getState() {
 }
 
 PlayCore::PlayCore(const std::string& filePath, long wndId){
-    m_pRender = new YUV420PToRGBARender(wndId);
+    m_wndId = wndId;
     m_pDecoder = new FFVideoDecoder(filePath);
-
-    m_glThread = new TaskThread;
-    m_glThread->addTask([this]() {
-        m_pRender->init(); 
-        m_state = EZCore::PlayState_Ready;
-        m_pClock = new OClock(33, std::bind(&PlayCore::timeOClock, this));
-    });
+    initRender(AV_PIX_FMT_NV12);
 }
 
 PlayCore::~PlayCore(){

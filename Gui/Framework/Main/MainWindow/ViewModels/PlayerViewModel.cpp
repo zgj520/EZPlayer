@@ -89,6 +89,7 @@ void PlayerViewModel::updateMediaInfo(const std::string& file) {
     emit signalResolutionChanged(m_mediaInfo.width, m_mediaInfo.height);
     m_mediaoInfoKeyValuelist.clear();
     m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("分辨率"), QString("%1 x %2").arg(m_mediaInfo.width).arg(m_mediaInfo.height)});
+    m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("画面比例"), QString("%1:%2").arg(m_mediaInfo.displayWidth).arg(m_mediaInfo.displayHeight) });
     m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("帧率"), QString("%1").arg(m_mediaInfo.fps) });
     m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("时长"), QString("%1 (us)").arg(m_mediaInfo.duration) });
     m_mediaoInfoKeyValuelist.push_back({ QStringLiteral("总帧数"), QString("%1").arg(m_mediaInfo.frameCount)});

@@ -1,9 +1,9 @@
-#include "YUV420PToRGBARender.h"
+#include "NV12ToRGBARender.h"
 #include "d3d11.h"
 #include "EGL\eglext.h"
 #include <wrl/client.h>
 
-YUV420PToRGBARender::YUV420PToRGBARender(long windid):VideoBaseRender(windid, AV_PIX_FMT_YUV420P) {
+NV12ToRGBARender::NV12ToRGBARender(long windid):VideoBaseRender(windid, AV_PIX_FMT_NV12) {
     kVS = R"(
 attribute vec4 vPosition;
 attribute vec2 aSamplerCoord;
@@ -19,33 +19,29 @@ precision mediump float;
 varying vec2 vSamplerCoord;
 uniform sampler2D uSamplerTexture1;
 uniform sampler2D uSamplerTexture2;
-uniform sampler2D uSamplerTexture3;
 void main()
 {
     vec3 yuv;
-    yuv.x = texture2D(uSamplerTexture1, vSamplerCoord).r - 16.0/235.0;
-    yuv.y = texture2D(uSamplerTexture2, vSamplerCoord).r - 128.0/240.0;
-    yuv.z = texture2D(uSamplerTexture3, vSamplerCoord).r - 128.0/240.0;
-    mat3 yuv_to_rgb = mat3(1.164, 1.164,  1.164,
-                           0.0,    -0.213, 2.112,
-                           1.793, -0.533, 0.0);
-    gl_FragColor = vec4(yuv_to_rgb * yuv, 1.0);
+    yuv.x = texture2D(uSamplerTexture1, vSamplerCoord).r - 0.0625;
+    yuv.y = texture2D(uSamplerTexture2, vSamplerCoord).r - 0.5;
+    yuv.z = texture2D(uSamplerTexture2, vSamplerCoord).g - 0.5;
+    mat3 nv12_to_rgba = mat3( 1,       1,        1,
+                              0,       -0.39465, 2.03211,
+                              1.13983, -0.58060, 0);
+    gl_FragColor = vec4(nv12_to_rgba * yuv, 1.0);
 })";
 }
 
-YUV420PToRGBARender::~YUV420PToRGBARender() {
+NV12ToRGBARender::~NV12ToRGBARender() {
     if (m_yTextureId > 0) {
         glDeleteTextures(1, &m_yTextureId);
     }
-    if (m_uTextureId > 0) {
-        glDeleteTextures(1, &m_uTextureId);
-    }
-    if (m_vTextureId > 0) {
-        glDeleteTextures(1, &m_vTextureId);
+    if (m_uvTextureId > 0) {
+        glDeleteTextures(1, &m_uvTextureId);
     }
 }
 
-GLuint YUV420PToRGBARender::genTexture(int width, int height) {
+GLuint NV12ToRGBARender::genTexture(int width, int height, GLuint format) {
     GLuint texture_ID = 0;
     glGenTextures(1, &texture_ID);
     GLint lastTextureID = 0;
@@ -55,13 +51,13 @@ GLuint YUV420PToRGBARender::genTexture(int width, int height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, lastTextureID);
     return texture_ID;
 }
 
-void YUV420PToRGBARender::render(AVFrame* frame) {
+void NV12ToRGBARender::render(AVFrame* frame) {
     if (m_programId == 0) {
         m_programId = glCreateProgram();
         if (!compileSharder(&m_vertShader, GL_VERTEX_SHADER, kVS.c_str()) || !compileSharder(&m_fragShader, GL_FRAGMENT_SHADER, kFS.c_str())) {
@@ -129,21 +125,14 @@ void YUV420PToRGBARender::render(AVFrame* frame) {
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, frame->data[0]);
     glUniform1i(glGetUniformLocation(m_programId,"uSamplerTexture1"), 0);
 
-    if (m_uTextureId == 0) {
-        m_uTextureId = genTexture(width/2, height/2);
+    if (m_uvTextureId == 0) {
+        m_uvTextureId = genTexture(width/2, height/2, GL_RG);
     }
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_uTextureId);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width/2, height/2, GL_RED, GL_UNSIGNED_BYTE, frame->data[1]);
+    glBindTexture(GL_TEXTURE_2D, m_uvTextureId);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width/2, height/2, GL_RG, GL_UNSIGNED_BYTE, frame->data[1]);
     glUniform1i(glGetUniformLocation(m_programId, "uSamplerTexture2"), 1);
 
-    if (m_vTextureId == 0) {
-        m_vTextureId = genTexture(width / 2, height / 2);
-    }
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_vTextureId);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width/2, height/2, GL_RED, GL_UNSIGNED_BYTE, frame->data[2]);
-    glUniform1i(glGetUniformLocation(m_programId, "uSamplerTexture3"), 2);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, vertx_index_data);

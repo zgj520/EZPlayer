@@ -47,7 +47,7 @@ bool convertFrame2DstFormat(AVFrame* pSrcFrame, AVFrame* dstFrame, AVPixelFormat
 
 FFVideoDecoder::FFVideoDecoder(const std::string& filePath){
     m_filePath = filePath;
-    if (initBySoft()) {
+    if (/*initBySoft()*/ init()) {
         m_pThread = new std::thread(&threadFunc, this);
     }
 }
@@ -339,7 +339,11 @@ void FFVideoDecoder::decodeThreadFunc() {
                 av_frame_free(&pFrame);
                 break;
             }
-            m_vtFrameCache.push_back(pFrame);
+            AVFrame* sw_frame = av_frame_alloc();
+            av_hwframe_transfer_data(sw_frame, pFrame, 0);
+            sw_frame->pts = pFrame->pts;
+            m_vtFrameCache.push_back(sw_frame);
+            av_frame_free(&pFrame);
         }
         av_packet_free(&packet);
     }

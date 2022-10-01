@@ -3,7 +3,7 @@
 #include "EGL\eglext.h"
 #include <wrl/client.h>
 
-D3D11NV12ToRGBARender::D3D11NV12ToRGBARender(long windid):VideoBaseRender(windid) {
+D3D11NV12ToRGBARender::D3D11NV12ToRGBARender(long windid):VideoBaseRender(windid, AV_PIX_FMT_D3D11) {
 }
 
 void D3D11NV12ToRGBARender::render(AVFrame* frame) {
