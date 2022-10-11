@@ -41,7 +41,18 @@ namespace EZCore {
         info.fps = 1.0* avFPS.num/ avFPS.den;
 
         av_reduce(&info.displayWidth, &info.displayHeight, pCodecCtx->width * (int64_t)pVideoStream->sample_aspect_ratio.num, pCodecCtx->height * (int64_t)pVideoStream->sample_aspect_ratio.den, 1024 * 1024);
-
+        if (info.displayHeight == 0 || info.displayWidth == 0) {
+            int a = pCodecCtx->width;
+            int b = pCodecCtx->height;
+            int r = a % b;
+            while (r != 0) {
+                a = b;
+                b = r;
+                r = a % b;
+            }
+            info.displayWidth = pCodecCtx->width / b;
+            info.displayHeight = pCodecCtx->height / b;
+        }
         avcodec_free_context(&pCodecCtx);
         avformat_close_input(&pFormatContext);
         return true;

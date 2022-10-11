@@ -1,6 +1,7 @@
 #pragma once
 #include "Render\VideoBaseRender.h"
 #include "Decode\FFVideoDecoder.h"
+#include "Decode\FFAudioDecoder.h"
 #include "../../Utils/Src/Thread/TaskThread.h"
 #include "../Interface/CoreInterface.h"
 #include "OClock\OClock.h"
@@ -34,7 +35,8 @@ private:
 
 private:
     long m_wndId = 0;
-    FFVideoDecoder* m_pDecoder = nullptr;
+    FFVideoDecoder* m_pVideoDecoder = nullptr;
+    FFAudioDecoder* m_pAudioDecoder = nullptr;
     VideoBaseRender* m_pRender = nullptr;
     EZCore::PlayState m_state = EZCore::PlayState_None;
 
