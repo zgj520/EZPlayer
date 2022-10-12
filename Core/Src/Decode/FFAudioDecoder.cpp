@@ -27,7 +27,7 @@ bool FFAudioDecoder::init() {
     }
 
     AVCodec* pCodec = nullptr;
-    m_StreamIndex = av_find_best_stream(pFormatContext, AVMEDIA_TYPE_VIDEO, -1, -1, &pCodec, 0);
+    m_StreamIndex = av_find_best_stream(pFormatContext, AVMEDIA_TYPE_AUDIO, -1, -1, &pCodec, 0);
     if (m_StreamIndex < 0 || pCodec == nullptr) {
         return false;
     }

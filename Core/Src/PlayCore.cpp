@@ -20,21 +20,27 @@ void PlayCore::showNextFrame() {
     EZCore::MediaInfo info;
     m_pVideoDecoder->getMediaInfo(info);
     int64_t timesample = 0;
-    auto frame = m_pVideoDecoder->getOneFrame(timesample);
-    if (frame != nullptr) {
-        m_pRender->render(frame);
+    auto videoframe = m_pVideoDecoder->getOneFrame(timesample);
+    if (videoframe != nullptr) {
+        m_pRender->render(videoframe);
         if (m_lastFrame != nullptr) {
             m_pVideoDecoder->freeOneFrame(m_lastFrame);
         }
-        m_lastFrame = frame;
+        m_lastFrame = videoframe;
     }
-    else if (m_pVideoDecoder->isEOF()) {
+
+    int64_t audioTime = 0;
+    auto audioframe = m_pAudioDecoder->getOneFrame(audioTime);
+    if (audioframe != nullptr) {
+        int a = 0;
+    }
+    
+    if (m_pAudioDecoder->isEOF() && m_pVideoDecoder->isEOF()) {
         m_state = EZCore::PlayState_EOF;
         timesample = info.duration;
     }
 
     if (m_playcbk) {
-        printf("time:%lld", timesample);
         m_playcbk(timesample, info.duration);
     }
 }
@@ -123,10 +129,9 @@ bool PlayCore::seekTime(int64_t time) {
         }
         auto temp = m_state;
         m_state == EZCore::PlayState_Paused;
-        auto ret = m_pVideoDecoder->seekTime(time);
-        if (ret) {
-            showNextFrame();
-        }
+        m_pVideoDecoder->seekTime(time);
+        m_pAudioDecoder->seekTime(time);
+        showNextFrame();
         m_state = temp;
     });
     return true;
