@@ -196,3 +196,10 @@ void FFBaseDecoder::decodeThreadFunc() {
     }
     return;
 }
+
+int64_t FFBaseDecoder::getSampleRate() {
+    if (!isValid()) {
+        return 0;
+    }
+    return m_pCodecContext->sample_rate;
+}

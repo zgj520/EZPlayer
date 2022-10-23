@@ -31,6 +31,8 @@ public:
 
     void decodeThreadFunc();
 
+    int64_t getSampleRate();
+
 protected:
     virtual bool init();
     bool isValid();

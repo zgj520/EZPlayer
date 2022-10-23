@@ -32,7 +32,8 @@ void PlayCore::showNextFrame() {
     int64_t audioTime = 0;
     auto audioframe = m_pAudioDecoder->getOneFrame(audioTime);
     if (audioframe != nullptr) {
-        int a = 0;
+        auto type = (AVSampleFormat)audioframe->format;
+        m_AudioRender->WriteFLTP((float*)audioframe->data[0], (float*)audioframe->data[1], audioframe->nb_samples);
     }
     
     if (m_pAudioDecoder->isEOF() && m_pVideoDecoder->isEOF()) {
@@ -157,6 +158,9 @@ PlayCore::PlayCore(const std::string& filePath, long wndId){
     m_pVideoDecoder = new FFVideoDecoder(filePath);
     m_pAudioDecoder = new FFAudioDecoder(filePath);
     initRender(AV_PIX_FMT_NV12);
+    // 初始化 AudioPlayer，无论如何固定使用双声道
+    m_AudioRender = new AudioPlayer(2, m_pAudioDecoder->getSampleRate());
+    m_AudioRender->Start();
 }
 
 PlayCore::~PlayCore(){

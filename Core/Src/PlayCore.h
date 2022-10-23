@@ -5,6 +5,7 @@
 #include "../../Utils/Src/Thread/TaskThread.h"
 #include "../Interface/CoreInterface.h"
 #include "OClock\OClock.h"
+#include "Render\Audio\AudioPlayer.h"
 #include <string>
 
 class PlayCore
@@ -38,6 +39,7 @@ private:
     FFVideoDecoder* m_pVideoDecoder = nullptr;
     FFAudioDecoder* m_pAudioDecoder = nullptr;
     VideoBaseRender* m_pRender = nullptr;
+    AudioPlayer* m_AudioRender = nullptr;
     EZCore::PlayState m_state = EZCore::PlayState_None;
 
     OClock* m_pClock = nullptr;
