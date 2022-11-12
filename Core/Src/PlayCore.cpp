@@ -3,6 +3,7 @@
 #include "Render\D3D11NV12ToRGBARender.h"
 #include "Render\YUV420PToRGBARender.h"
 #include "Render\NV12ToRGBARender.h"
+#include "Render\D3D11DXRender.h"
 
 void PlayCore::timeOClock() {
     m_glThread->addTask([this]() {
@@ -33,7 +34,7 @@ void PlayCore::showNextFrame() {
     auto audioframe = m_pAudioDecoder->getOneFrame(audioTime);
     if (audioframe != nullptr) {
         auto type = (AVSampleFormat)audioframe->format;
-        m_AudioRender->WriteFLTP((float*)audioframe->data[0], (float*)audioframe->data[1], audioframe->nb_samples);
+        //m_AudioRender->WriteFLTP((float*)audioframe->data[0], (float*)audioframe->data[1], audioframe->nb_samples);
     }
     
     if (m_pAudioDecoder->isEOF() && m_pVideoDecoder->isEOF()) {
@@ -66,7 +67,9 @@ bool PlayCore::initRender(AVPixelFormat format) {
     case AV_PIX_FMT_NV21:
     case AV_PIX_FMT_QSV:
     case AV_PIX_FMT_CUDA:
+        break;
     case AV_PIX_FMT_D3D11:
+        m_pRender = new D3D11DXRender((HWND)m_wndId);
         break;
     }
     if (m_pRender == nullptr) {
@@ -157,7 +160,7 @@ PlayCore::PlayCore(const std::string& filePath, long wndId){
     m_wndId = wndId;
     m_pVideoDecoder = new FFVideoDecoder(filePath);
     m_pAudioDecoder = new FFAudioDecoder(filePath);
-    initRender(AV_PIX_FMT_NV12);
+    initRender(AV_PIX_FMT_D3D11/*AV_PIX_FMT_NV12*/);
     // 初始化 AudioPlayer，无论如何固定使用双声道
     m_AudioRender = new AudioPlayer(2, m_pAudioDecoder->getSampleRate());
     m_AudioRender->Start();

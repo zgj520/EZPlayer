@@ -182,11 +182,14 @@ void FFBaseDecoder::decodeThreadFunc() {
                 break;
             }
             if (m_pCodecContext->hw_device_ctx) {
+                /*
                 AVFrame* sw_frame = av_frame_alloc();
                 av_hwframe_transfer_data(sw_frame, pFrame, 0);
                 sw_frame->pts = pFrame->pts;
                 m_vtFrameCache.push_back(sw_frame);
                 av_frame_free(&pFrame);
+                */
+                m_vtFrameCache.push_back(pFrame);
             }
             else {
                 m_vtFrameCache.push_back(pFrame);
