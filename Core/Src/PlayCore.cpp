@@ -69,7 +69,7 @@ bool PlayCore::initRender(AVPixelFormat format) {
     case AV_PIX_FMT_CUDA:
         break;
     case AV_PIX_FMT_D3D11:
-        m_pRender = new D3D11DXRender((HWND)m_wndId);
+        m_pRender = new D3D11NV12ToRGBARender(m_wndId) /*new D3D11DXRender((HWND)m_wndId)*/;
         break;
     }
     if (m_pRender == nullptr) {

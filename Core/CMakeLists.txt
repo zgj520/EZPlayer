@@ -22,6 +22,8 @@ configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/Version/version.rc
 )
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Src/Render/Shader)
+
 #====================== angle setting ============================
 target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/../3rd/angle/libs/${CMAKE_BUILD_TYPE})
 target_link_libraries(${PROJECT_NAME} PUBLIC libEGL.dll.lib)
