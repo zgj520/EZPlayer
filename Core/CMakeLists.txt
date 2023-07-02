@@ -22,6 +22,9 @@ configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/Version/version.rc
 )
 
+add_definitions(-DEGL_EGLEXT_PROTOTYPES)
+add_definitions(-DGL_GLEXT_PROTOTYPES)
+
 #====================== angle setting ============================
 target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/../3rd/angle/libs/${CMAKE_BUILD_TYPE})
 target_link_libraries(${PROJECT_NAME} PUBLIC libEGL.dll.lib)
@@ -49,3 +52,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC EZLog)
 #====================== ezutils setting ============================
 target_link_libraries(${PROJECT_NAME} PUBLIC EZUtils)
 include_directories(${PROJECT_SOURCE_DIR}/../Utils/Src)
+
+#====================== DirectXTK setting ============================
+target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/../3rd/DirectXTK/lib/Release/x64)
+target_link_libraries(${PROJECT_NAME} PUBLIC DirectXTK)
+include_directories(${PROJECT_SOURCE_DIR}/../3rd/DirectXTK/include)

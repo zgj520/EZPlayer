@@ -29,15 +29,19 @@ void PlayCore::showNextFrame() {
         }
         m_lastFrame = videoframe;
     }
+    bool videoEOS = m_pVideoDecoder->isEOF();
 
+    /*
     int64_t audioTime = 0;
     auto audioframe = m_pAudioDecoder->getOneFrame(audioTime);
     if (audioframe != nullptr) {
         auto type = (AVSampleFormat)audioframe->format;
-        //m_AudioRender->WriteFLTP((float*)audioframe->data[0], (float*)audioframe->data[1], audioframe->nb_samples);
+        m_AudioRender->WriteFLTP((float*)audioframe->data[0], (float*)audioframe->data[1], audioframe->nb_samples);
     }
+    */
+    bool audioEOS = true;//m_pAudioDecoder->isEOF();
     
-    if (m_pAudioDecoder->isEOF() && m_pVideoDecoder->isEOF()) {
+    if (videoEOS && audioEOS) {
         m_state = EZCore::PlayState_EOF;
         timesample = info.duration;
     }
@@ -69,7 +73,7 @@ bool PlayCore::initRender(AVPixelFormat format) {
     case AV_PIX_FMT_CUDA:
         break;
     case AV_PIX_FMT_D3D11:
-        m_pRender = new D3D11DXRender((HWND)m_wndId);
+        m_pRender = new D3D11NV12ToRGBARender(m_wndId);//new D3D11DXRender((HWND)m_wndId);
         break;
     }
     if (m_pRender == nullptr) {

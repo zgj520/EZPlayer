@@ -26,6 +26,7 @@ include_directories(${PROJECT_SOURCE_DIR}/../../Log/Src)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC Core)
 include_directories(${PROJECT_SOURCE_DIR}/../../Core/Interface)
+include_directories(${PROJECT_SOURCE_DIR})
 
 #version
 set(TARGETFILENAME ${PROJECT_NAME})

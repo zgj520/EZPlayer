@@ -5,6 +5,9 @@
 #include "../../Log/Interface/EZLogInterface.h"
 #include <vector>
 
+void angleLogErr(angle::PlatformMethods* platform, const char* errorMessage){
+    EZLOGE("ANGLE:%s", errorMessage);
+}
 VideoBaseRender::VideoBaseRender(long windid, AVPixelFormat format) {
     m_windid = windid;
     m_renderFormat = format;
@@ -114,6 +117,13 @@ bool VideoBaseRender::init() {
 
     // use current contex
     eglMakeCurrent(m_display, m_surface, m_surface, m_context);
+
+    glGenFramebuffers(1, &m_frameBuff);
+
+    angle::PlatformMethods *method;
+    if (ANGLEGetDisplayPlatform(nullptr, angle::g_PlatformMethodNames, angle::g_NumPlatformMethods, nullptr, &method)) {
+        method->logError = angleLogErr;
+    }
 }
 
 void VideoBaseRender::render() {
@@ -192,6 +202,10 @@ GLint VideoBaseRender::createTextureFromImgaeData(void* imageData, int width, in
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
     glBindTexture(GL_TEXTURE_2D, lastTextureID);
     return texture_ID;
+}
+
+void VideoBaseRender::bindFrameBuffer() {
+
 }
 
 void VideoBaseRender::destroyGL()

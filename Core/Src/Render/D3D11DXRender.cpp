@@ -3,6 +3,7 @@
 #include "PixelShader.h"
 #include "TextureVertexShader.h"
 #include "TexturePixelShader.h"
+#include "Utils\RenderUtils.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -165,12 +166,17 @@ void D3D11DXRender::render(AVFrame* frame) {
     if (t_frame == nullptr) {
         return;
     }
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dstTexture;
+    if (!CopyD3D11AVFrame2D3D11Texture(dstTexture, m_spD3DDeivce.Get(), frame)) {
+        return;
+    }
+    /*
     Microsoft::WRL::ComPtr<ID3D11Device> decodeDevice;
     t_frame->GetDevice(decodeDevice.GetAddressOf());
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> decodeDeviceCtx;
     decodeDevice->GetImmediateContext(&decodeDeviceCtx);
 
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> dstTexture;
+    
     D3D11_TEXTURE2D_DESC tdesc = {};
     tdesc.Format = DXGI_FORMAT_NV12;
     tdesc.Usage = D3D11_USAGE_DEFAULT;
@@ -191,6 +197,7 @@ void D3D11DXRender::render(AVFrame* frame) {
     ret = decodeDevice->OpenSharedResource(sharedHandle, __uuidof(ID3D11Texture2D), (void**)&videoTexture);
     decodeDeviceCtx->CopySubresourceRegion(videoTexture.Get(), 0, 0, 0, 0, t_frame, (int)frame->data[1], 0);
     decodeDeviceCtx->Flush();
+    */
 
     // 视频帧数据传递
     D3D11_SHADER_RESOURCE_VIEW_DESC const YPlaneDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(dstTexture.Get(), D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8_UNORM );

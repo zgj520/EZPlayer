@@ -25,6 +25,8 @@ public:
 
     virtual AVPixelFormat getRenderType() { return m_renderFormat; }
 
+    virtual void bindFrameBuffer();
+
 protected:
     GLint createTextureFromImgaeData(void* imageData, int width, int height);
 
@@ -44,6 +46,8 @@ protected:
     GLuint m_vertShader = 0;
     GLuint m_fragShader = 0;
     GLuint m_programId = 0;
+
+    GLuint m_frameBuff = 0;
 
     ID3D11Device* m_glD3d11Device = nullptr;
     IDirect3DDevice9* m_glD3d9Device = nullptr;
