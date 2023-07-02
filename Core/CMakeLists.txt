@@ -25,6 +25,9 @@ configure_file(
 add_definitions(-DEGL_EGLEXT_PROTOTYPES)
 add_definitions(-DGL_GLEXT_PROTOTYPES)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Src/Render/Shader)
+
+
 #====================== angle setting ============================
 target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/../3rd/angle/libs/${CMAKE_BUILD_TYPE})
 target_link_libraries(${PROJECT_NAME} PUBLIC libEGL.dll.lib)
