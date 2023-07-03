@@ -97,54 +97,6 @@ void D3D11NV12ToRGBARender::render(AVFrame* frame) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    int width = frame->width;
-    int height = frame->height;
-
-    RECT RC;
-    ::GetClientRect((HWND)m_windid, &RC);
-    // Set the viewport
-    glViewport(0, 0, RC.right - RC.left, RC.bottom - RC.top);
-
-    // Use the program object
-    glUseProgram(m_programId);
-
-    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //定义定点数组
-    float vertex_coord_data[] = {
-            -1.f, -1.f, 0.f,   0.f, 1.f,
-            -1.f,  1.f, 0.f,   0.f, 0.f,
-             1.f,  1.f, 0.f,   1.f, 0.f,
-             1.f, -1.f, 0.f,   1.f, 1.f,
-    };
-
-    uint32_t vertx_index_data[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    uint32_t m_vertex_buffer, m_index_buffer;
-    glGenBuffers(1, &m_vertex_buffer);
-    glGenBuffers(1, &m_index_buffer);
-
-    GLuint m_vertex_array;
-    glGenVertexArrays(1, &m_vertex_array);
-    glBindVertexArray(m_vertex_array);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_coord_data), vertex_coord_data, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertx_index_data), vertx_index_data, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
     auto client_buf = static_cast<EGLClientBuffer>(d3d11Texture.Get());
     EGLint attribs[] = {EGL_D3D11_TEXTURE_PLANE_ANGLE, 0, EGL_NONE };
     EGLImage yImage = eglCreateImageKHR(m_display, EGL_NO_CONTEXT, EGL_D3D11_TEXTURE_ANGLE, client_buf, attribs);
