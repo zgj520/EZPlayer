@@ -13,6 +13,13 @@ if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
+#version
+set(TARGETFILENAME ${EXEC_NAME})
+configure_file(
+	${WITHICO_RC_TEMPLETE_PATH}
+	${CMAKE_CURRENT_SOURCE_DIR}/Version/version.rc
+)
+
 target_link_directories(${EXEC_NAME} PUBLIC ${PROJECT_BINARY_DIR}/bin)
 target_link_libraries(${EXEC_NAME} PUBLIC EZLog)
 target_link_libraries(${EXEC_NAME} PUBLIC EZUtils)
@@ -29,13 +36,6 @@ target_sources(${EXEC_NAME}
 	PRIVATE
 	${All_Src}
 	Version/version.rc
-)
-
-#version
-set(TARGETFILENAME ${EXEC_NAME})
-configure_file(
-	${WITHICO_RC_TEMPLETE_PATH}
-	${CMAKE_CURRENT_SOURCE_DIR}/Version/version.rc
 )
 
 
